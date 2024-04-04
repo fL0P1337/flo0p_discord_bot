@@ -25,10 +25,10 @@ def help_msg():
     help_msg = disnake.Embed(
     title = "Welcome! Theres a list of available functions:",
     description ="!rembg - remove background from any photos using AI\n"
+                "!imgtotxt - extract text from image, supports Russian and English languages"
                 "/chatgpt [your_prompt] - chatGPT will write whatever you ask!\n"
                 "/gtts [language: ru, en, fr, pt, es] [your_message] - Google text to speach will convert your message to speach!\n"
                 "/ytmp3 [youtube_link] - Convert YouTube video into mp3!\n"
-                "/weather [any_city] - Find current weather in any city of the world\n"
                 "/credits - Will show you credits like used libs and author of this bot\n"
                 "/randomcat - Most important function in this bot \n",
     colour = 0xF0C43F,
