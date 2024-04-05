@@ -98,7 +98,7 @@ async def rembg(ctx):
             img = Image.open(input_path)
             output = remove(img)
             output.save(output_path)
-        await ctx.edit(embed = embeds.req_done(" ").set_image(file=disnake.File(output_path)))
+        await ctx.reply(embed = embeds.req_done(" ").set_image(file=disnake.File(output_path)))
         embeds.logger("!rembg", ctx.author, attachment.filename, output_path)
     except Exception as error:
         await ctx.message.edit(embed=embeds.req_failed(error))
