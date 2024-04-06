@@ -7,7 +7,6 @@ import aiohttp
 import disnake
 import g4f
 from g4f.client import Client
-import python_weather
 from disnake.ext import commands
 from gtts import gTTS
 from pytube import YouTube
@@ -53,7 +52,7 @@ async def randomcat(inter):
 async def chatgpt(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_msg = g4f.ChatCompletion.create(model=g4f.models.default, messages=[{"role": "user","content": your_prompt}], )
+        resp_msg = await g4f.ChatCompletion.create_async(model=g4f.models.default, messages=[{"role": "user","content": your_prompt}], )
         await inter.edit_original_response(embed=headers.req_done(resp_msg))
         headers.logger("!chatgpt", inter.author, your_prompt, resp_msg)
     except Exception as error:
@@ -117,4 +116,4 @@ async def imgtotxt(ctx):
             await ctx.reply(headers.req_failed(error))
             headers.logger("!imgtotxt", ctx.author, attachment.filename, error)
 """
-bot.run('')
+bot.run('your_token')
