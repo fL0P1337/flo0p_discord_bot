@@ -1,19 +1,18 @@
 import datetime
 import headers
 import io
-import os
 from datetime import datetime
 import aiohttp
 import disnake
 import g4f
-from g4f.client import Client
 from disnake.ext import commands
 from gtts import gTTS
 from pytube import YouTube
 from rembg import remove
 #import easyocr
 from PIL import Image
-from g4f.client import Client
+import nest_asyncio
+nest_asyncio.apply()
 time = datetime.now()
 activity = disnake.Activity(
     name="!help / Currently working",
@@ -52,7 +51,7 @@ async def randomcat(inter):
 async def chatgpt(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_msg = await g4f.ChatCompletion.create_async(model=g4f.models.default, messages=[{"role": "user","content": your_prompt}], )
+        resp_msg = g4f.ChatCompletion.create_async(model=g4f.models.default, messages=[{"role": "user","content": your_prompt}], )
         await inter.edit_original_response(embed=headers.req_done(resp_msg))
         headers.logger("!chatgpt", inter.author, your_prompt, resp_msg)
     except Exception as error:
