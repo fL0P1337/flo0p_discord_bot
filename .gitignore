@@ -1,4 +1,5 @@
 
 /__pycache__
 /files
-/logs
+token.txt
+logs/logsDS.txt

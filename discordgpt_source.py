@@ -41,13 +41,14 @@ async def credits(inter): # /credits message
 @bot.slash_command(description="Most important function in this bot")
 async def randomcat(inter):
     try:
+        await inter.response.send_message(embed=headers.req_claim())
         async with aiohttp.ClientSession() as session:
             async with session.get('https://cataas.com/cat') as resp:
                     data = io.BytesIO(await resp.read())
-                    await inter.response.send_message(embed=headers.req_done(" ").set_image(file=disnake.File(data,"cool_image.png")))
-                    headers.logger("!randomcat", inter.author, inter, data)
-    except Exception as error:
-        await inter.response.send_message(embed = headers.req_failed(error=error))
+                    await inter.edit_original_response(embed=headers.req_done(" ").set_image(file=disnake.File(data,"cool_image.png")))
+                    headers.logger("!randomcat", inter.author, "inter", "data")
+    except Exception as randomcat_error:
+        await inter.edit_original_response(embed = headers.req_failed(randomcat_error))
 @bot.slash_command(description="chatGPT will write whatever you ask!")
 async def chatgpt(inter, *, your_prompt: str):
     try:
@@ -117,4 +118,4 @@ async def imgtotxt(ctx):
             await ctx.reply(headers.req_failed(error))
             headers.logger("!imgtotxt", ctx.author, attachment.filename, error)
 """
-bot.run('your_token')
+bot.run(headers.get_bot_token())

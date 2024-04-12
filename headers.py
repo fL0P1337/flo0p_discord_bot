@@ -3,14 +3,10 @@ import shutil
 import os
 from datetime import datetime
 import disnake
-from disnake.ext import commands
 time = datetime.now()
-activity = disnake.Activity(
-    name="!help / Currently working",
-    type=disnake.ActivityType.playing,
-)
-
-bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all(), help_command=None,activity=activity)
+def get_bot_token():
+     txt = open("token.txt",)
+     return txt.read()
 def help_msg(): # !help message content
     help_msg = disnake.Embed(
     title = "Welcome! Theres a list of available functions:",
@@ -36,16 +32,16 @@ def credits_msg(): # /credits message content
     return credit_msg
 def req_claim(): # embed for request claim message
     req_claim = disnake.Embed(
-        title="Ваш запрос обрабатывается!",
-        description="Ожидайте ответа, вы будете уведомлены по завершению процесса...",
+        title="Your request is being processed!",
+        description="Wait a response, you will be notified when the process is complete....",
         colour=0xF0C43F,
         timestamp=datetime.now(),
     )
     return req_claim
 def req_failed(error): # embed for exceptions
         req_failed = disnake.Embed(
-        title="Произошла ошибка! Попробуйте переоформить ваш запрос.\n"
-              "Код ошибки: ",
+        title="There's been an error! Try re-posting your request.\n"
+              "Error code: ",
         description=error,
         colour=0xF0C43F,
         timestamp=datetime.now(),
@@ -53,7 +49,7 @@ def req_failed(error): # embed for exceptions
         return req_failed
 def req_done (description): # embed for done requests
         req_done = disnake.Embed(
-        title="Ваш ответ готов!",
+        title="Your answer is ready!",
         description=description,
         colour=0xF0C43F,
         timestamp=datetime.now(),
