@@ -4,6 +4,7 @@ import io
 from datetime import datetime
 import aiohttp
 import disnake
+from g4f.client import Client
 import g4f
 from disnake.ext import commands
 from gtts import gTTS
@@ -51,8 +52,9 @@ async def randomcat(inter):
 async def chatgpt(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_msg = g4f.ChatCompletion.create_async(model=g4f.models.default, messages=[{"role": "user","content": your_prompt}], )
-        await inter.edit_original_response(embed=headers.req_done(resp_msg))
+        client = Client()
+        resp_msg = client.chat.completions.create(model=g4f.models.default, messages=[{"role": "user","content": your_prompt}], )
+        await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
         headers.logger("!chatgpt", inter.author, your_prompt, resp_msg)
     except Exception as error:
         await inter.edit_original_response(embed = headers.req_failed(error=error))
