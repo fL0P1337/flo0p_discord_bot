@@ -43,13 +43,14 @@ def req_claim(): # embed for request claim message
     )
     return req_claim
 def req_failed(error): # embed for exceptions
-        disnake.Embed(
+        req_failed = disnake.Embed(
         title="Произошла ошибка! Попробуйте переоформить ваш запрос.\n"
               "Код ошибки: ",
         description=error,
         colour=0xF0C43F,
         timestamp=datetime.now(),
             )
+        return req_failed
 def req_done (description): # embed for done requests
         req_done = disnake.Embed(
         title="Ваш ответ готов!",

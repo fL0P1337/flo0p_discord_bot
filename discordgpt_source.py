@@ -55,9 +55,9 @@ async def chatgpt(inter, *, your_prompt: str):
         client = Client()
         resp_msg = client.chat.completions.create(model=g4f.models.default, messages=[{"role": "user","content": your_prompt}], )
         await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
-        headers.logger("!chatgpt", inter.author, your_prompt, resp_msg)
-    except Exception as error:
-        await inter.edit_original_response(embed = headers.req_failed(error=error))
+        headers.logger("!chatgpt", inter.author, your_prompt, resp_msg.choices[0].message.content)
+    except Exception as chatgpt_error:
+        await inter.edit_original_response(embed = headers.req_failed(error=chatgpt_error))
 @bot.slash_command(description="Convert YouTube video into mp3!")
 async def ytmp3(inter, *, youtube_link: str):
     try:
