@@ -1,5 +1,7 @@
 
 /__pycache__
-/files
+/files/rembg/*
+/files/gtts/*
+/files/ytmp3/*
 token.txt
 logs/logsDS.txt
