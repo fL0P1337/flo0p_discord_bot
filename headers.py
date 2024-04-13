@@ -16,7 +16,8 @@ def help_msg(): # !help message content
                 "/gtts [language: ru, en, fr, pt, es] [your_message] - Google text to speach will convert your message to speach!\n"
                 "/ytmp3 [youtube_link] - Convert YouTube video into mp3!\n"
                 "/credits - Will show you credits like used libs and author of this bot\n"
-                "/randomcat - Most important function in this bot \n",
+                "/randomcat - Use this to receive random cat image \n"
+                "/randomcatgif - Use this to receive random cat gif \n",
     colour = 0xF0C43F,
     timestamp = datetime.now(),
     )

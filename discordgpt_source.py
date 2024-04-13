@@ -38,7 +38,7 @@ async def help(ctx): # !help message
 async def credits(inter): # /credits message
     await inter.response.send_message(embed=headers.credits_msg())
     headers.logger("!credits", inter.author, inter, " ")
-@bot.slash_command(description="Most important function in this bot")
+@bot.slash_command(description="Receive random cat image")
 async def randomcat(inter):
     try:
         await inter.response.send_message(embed=headers.req_claim())
@@ -49,7 +49,7 @@ async def randomcat(inter):
                     headers.logger("!randomcat", inter.author, "inter", "data")
     except Exception as randomcat_error:
         await inter.edit_original_response(embed = headers.req_failed(randomcat_error))
-@bot.slash_command(description="Most important function in this bot")
+@bot.slash_command(description="Receive random cat gif")
 async def randomcatgif(inter):
     try:
         await inter.response.send_message(embed=headers.req_claim())
@@ -65,7 +65,7 @@ async def chatgpt(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
         client = Client()
-        resp_msg = client.chat.completions.create(model=g4f.models.default, messages=[{"role": "user","content": your_prompt}], )
+        resp_msg = client.chat.completions.create(model="gpt-3.5-turbo", messages=[{"role": "user","content": your_prompt}], )
         await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
         headers.logger("!chatgpt", inter.author, your_prompt, resp_msg.choices[0].message.content)
     except Exception as chatgpt_error:
