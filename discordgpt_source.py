@@ -8,7 +8,7 @@ from disnake.ext import commands
 ##g4f related
 from g4f.client import Client
 import g4f
-from g4f.Provider import OpenaiChat, RetryProvider, BingCreateImages
+from g4f.Provider import HuggingChat
 from g4f.cookies import set_cookies
 # other related
 from gtts import gTTS
@@ -26,12 +26,8 @@ activity = disnake.Activity(
 
 bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all(), help_command=None,activity=activity)
 client = Client(
-    text_provider=OpenaiChat,
-    image_provider=BingCreateImages
+    text_provider=HuggingChat
     )
-set_cookies(".bing.com", {
-  "_U": headers.get_bing_cookies
-})
 headers.cleaner() # enable this optionally
 @bot.event
 async def on_ready(): # [+] "bot_name is ready!" message
@@ -75,24 +71,12 @@ async def randomcatgif(inter):
 async def chatgpt(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        provider_openai = RetryProvider([OpenaiChat], single_provider_retry=True, max_retries=5)
-        resp_msg = client.chat.completions.create(model=g4f.models.default, provider=provider_openai, messages=[{"role": "user","content": your_prompt,}])
+        resp_msg = client.chat.completions.create(model=g4f.models.default, messages=[{"role": "user","content": your_prompt,}])
         await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
         headers.logger("!chatgpt", inter.author, your_prompt, resp_msg.choices[0].message.content)
     except Exception as chatgpt_error:
         await inter.edit_original_response(embed = headers.req_failed(error=chatgpt_error))
         headers.logger("!chatgpt", inter.author, your_prompt, chatgpt_error)
-@bot.slash_command(description="Generate an image using text prompt!")
-async def imgen(inter, *, your_prompt: str):
-    try:
-        await inter.response.send_message(embed=headers.req_claim())
-        resp_image = client.images.generate(model="bing", prompt=your_prompt)
-        image_url = resp_image.data[0].url
-        await inter.edit_original_response(embed=headers.req_done(your_prompt).set_image(url=image_url))
-        headers.logger("!genimage", inter.author, your_prompt, image_url)
-    except Exception as genimage_error:
-        await inter.edit_original_response(embed = headers.req_failed(error=genimage_error))
-        headers.logger("!genimage", inter.author, your_prompt, genimage_error)
 @bot.slash_command(description="Convert YouTube video into mp3!")
 async def ytmp3(inter, *, youtube_link: str):
     try:
