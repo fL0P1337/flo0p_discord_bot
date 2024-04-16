@@ -82,6 +82,17 @@ async def chatgpt(inter, *, your_prompt: str):
     except Exception as chatgpt_error:
         await inter.edit_original_response(embed = headers.req_failed(error=chatgpt_error))
         headers.logger("!chatgpt", inter.author, your_prompt, chatgpt_error)
+@bot.slash_command(description="Generate an image using text prompt!")
+async def imgen(inter, *, your_prompt: str):
+    try:
+        await inter.response.send_message(embed=headers.req_claim())
+        resp_image = await client.images.generate(model="bing", prompt=your_prompt)
+        image_url = resp_image.data[0].url
+        await inter.edit_original_response(embed=headers.req_done(your_prompt).set_image(url=image_url))
+        headers.logger("!genimage", inter.author, your_prompt, image_url)
+    except Exception as genimage_error:
+        await inter.edit_original_response(embed = headers.req_failed(error=genimage_error))
+        headers.logger("!genimage", inter.author, your_prompt, genimage_error)
 @bot.slash_command(description="Convert YouTube video into mp3!")
 async def ytmp3(inter, *, youtube_link: str):
     try:
@@ -141,17 +152,4 @@ async def imgtotxt(ctx):
     except Exception as error:
             await ctx.reply(headers.req_failed(error))
             headers.logger("!imgtotxt", ctx.author, attachment.filename, error)
-"""
-""" GENIMAGE function
-@bot.slash_command(description="Generate an image using text prompt!")
-async def genimage(inter, *, your_prompt: str):
-    try:
-        await inter.response.send_message(embed=headers.req_claim())
-        resp_image = await client.images.generate(model="bing", prompt=your_prompt)
-        image_url = resp_image.data[0].url
-        await inter.edit_original_response(embed=headers.req_done(your_prompt).set_image(url=image_url))
-        headers.logger("!genimage", inter.author, your_prompt, image_url)
-    except Exception as genimage_error:
-        await inter.edit_original_response(embed = headers.req_failed(error=genimage_error))
-        headers.logger("!genimage", inter.author, your_prompt, genimage_error)
 """
