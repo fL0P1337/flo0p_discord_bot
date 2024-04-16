@@ -26,7 +26,8 @@ activity = disnake.Activity(
 
 bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all(), help_command=None,activity=activity)
 client = Client(
-    provider=OpenaiChat
+    text_provider=OpenaiChat,
+    image_provider=BingCreateImages
     )
 set_cookies(".bing.com", {
   "_U": headers.get_bing_cookies
