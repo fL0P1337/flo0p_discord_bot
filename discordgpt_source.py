@@ -71,7 +71,7 @@ async def randomcatgif(inter):
                     headers.logger("!randomcatgif", inter.author, "inter", "data")
     except Exception as randomcat_error:
         await inter.edit_original_response(embed = headers.req_failed(randomcat_error))
-@bot.slash_command(description="chatGPT will write whatever you ask!")
+@bot.slash_command(description="ChatGPT will write whatever you ask!")
 async def chatgpt(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
@@ -86,7 +86,7 @@ async def chatgpt(inter, *, your_prompt: str):
 async def imgen(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_image = await client.images.generate(model="bing", prompt=your_prompt)
+        resp_image = client.images.generate(model="bing", prompt=your_prompt)
         image_url = resp_image.data[0].url
         await inter.edit_original_response(embed=headers.req_done(your_prompt).set_image(url=image_url))
         headers.logger("!genimage", inter.author, your_prompt, image_url)
