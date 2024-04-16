@@ -4,9 +4,12 @@ import os
 from datetime import datetime
 import disnake
 time = datetime.now()
-def get_bot_token():
-     txt = open("token.txt",)
-     return txt.read()
+def get_bing_cookies(): #function to get bing _U token using bing_token.txt
+    bing_token = open("bing_token.txt")
+    return bing_token.read()
+def get_bot_token(): #function to get discord bot token using bot_token.txt
+     bot_token = open("bot_token.txt",)
+     return bot_token.read()
 def help_msg(): # !help message content
     help_msg = disnake.Embed(
     title = "Welcome! Theres a list of available functions:",
