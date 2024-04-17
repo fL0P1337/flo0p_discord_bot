@@ -7,9 +7,6 @@ time = datetime.now()
 def get_bot_token(): #function to get discord bot token using bot_token.txt
      bot_token = open("bot_token.txt",)
      return bot_token.read()
-def get_openai_token():
-     openai_token = open("openai_token.txt")
-     return openai_token.read()
 def help_msg(): # !help message content
     help_msg = disnake.Embed(
     title = "Welcome! Theres a list of available functions:",

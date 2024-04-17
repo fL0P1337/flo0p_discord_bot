@@ -8,7 +8,7 @@ from disnake.ext import commands
 ##g4f related
 from g4f.client import Client
 import g4f
-from g4f.Provider import Openai
+from g4f.Provider import Cohere
 from g4f.cookies import set_cookies
 # other related
 from gtts import gTTS
@@ -25,9 +25,7 @@ activity = disnake.Activity(
 )
 
 bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all(), help_command=None,activity=activity)
-client = Client(
-    text_provider=Openai,
-    )
+client = Client()
 headers.cleaner() # enable this optionally
 @bot.event
 async def on_ready(): # [+] "bot_name is ready!" message
@@ -71,7 +69,7 @@ async def randomcatgif(inter):
 async def chatgpt(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_msg = client.chat.completions.create(model=g4f.models.gpt_35_turbo, messages=[{"role": "user","content": your_prompt,}], api_key=headers.get_openai_token())
+        resp_msg = client.chat.completions.create(model=g4f.models.default, provider=Cohere, messages=[{"role": "user","content": your_prompt,}])
         await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
         headers.logger("!chatgpt", inter.author, your_prompt, resp_msg.choices[0].message.content)
     except Exception as chatgpt_error:
