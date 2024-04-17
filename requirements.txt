@@ -1,6 +1,6 @@
 aiohttp==3.9.3
 disnake==2.9.1
-g4f==0.2.9.4
+g4f==0.2.9.11
 nest_asyncio==1.6.0
 Pillow==10.3.0
 pytube==15.0.0

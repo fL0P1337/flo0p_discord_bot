@@ -69,7 +69,7 @@ async def randomcatgif(inter):
 async def chatgpt(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_msg = client.chat.completions.create(model=g4f.models.default, provider=Cohere, messages=[{"role": "user","content": your_prompt,}])
+        resp_msg = client.chat.completions.create(model=g4f.models.Cohere, provider=Cohere,messages=[{"role": "user","content": your_prompt,}])
         await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
         headers.logger("!chatgpt", inter.author, your_prompt, resp_msg.choices[0].message.content)
     except Exception as chatgpt_error:
