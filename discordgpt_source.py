@@ -91,6 +91,7 @@ async def sdxl(inter, *, your_prompt: str):
     except Exception as genimage_error:
         await inter.edit_original_response(embed = headers.req_failed(error=genimage_error))
         headers.logger("!sdxl", inter.author, your_prompt, genimage_error)
+@bot.slash_command(description="Convert YouTube video into mp3!")
 async def ytmp3(inter, *, youtube_link: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
