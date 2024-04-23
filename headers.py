@@ -3,7 +3,10 @@ import shutil
 import os
 from datetime import datetime
 import disnake
+import base64
+import aiohttp
 time = datetime.now()
+
 def get_bot_token(): #function to get discord bot token using bot_token.txt
      bot_token = open("bot_token.txt",)
      return bot_token.read()
@@ -78,3 +81,13 @@ def cleaner(): # cleaner function
                     shutil.rmtree(file_path)
             except Exception as e:
                 print(f'Failed to delete {file_path}. Reason: {e}')
+async def async_encode_base64(image_url: str): #  Asynchronously takes a url of direct image, downloads, and encodes that into a bytes object using Base64 encoding
+    b64_object_string = " " 
+    async with aiohttp.ClientSession() as sess:
+        async with sess.get(url=image_url) as resp:
+            if resp.status == 200:
+            # Convert image to bytes
+                resp = await resp.read()
+                bytestring = base64.b64encode(resp)
+                    
+    return bytestring

@@ -2,14 +2,15 @@ import headers
 import io
 from datetime import datetime
 import aiohttp
+import base64
+from io import BytesIO
 #disnake related
 import disnake
 from disnake.ext import commands
 ##g4f related
 from g4f.client import Client
 import g4f
-from g4f.Provider import Cohere
-from g4f.cookies import set_cookies
+from g4f.Provider import Llama, ReplicateImage
 # other related
 from gtts import gTTS
 from pytube import YouTube
@@ -17,16 +18,19 @@ from rembg import remove
 from PIL import Image
 import nest_asyncio
 #import easyocr
-nest_asyncio.apply()
 time = datetime.now()
 activity = disnake.Activity(
     name="!help / Currently working",
     type=disnake.ActivityType.playing,
 )
-
 bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all(), help_command=None,activity=activity)
-client = Client()
-headers.cleaner() # enable this optionally
+g4f.debug.logging = True
+nest_asyncio.apply()
+client = Client(
+    text_provider=Llama,
+    image_provider=ReplicateImage
+)
+headers.cleaner() # enable this optionally   
 @bot.event
 async def on_ready(): # [+] "bot_name is ready!" message
     ready_to_work = str(time)+": "+f" Bot {bot.user} is ready to work!"
@@ -69,13 +73,24 @@ async def randomcatgif(inter):
 async def chatgpt(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_msg = client.chat.completions.create(model=g4f.models.Cohere, provider=Cohere,messages=[{"role": "user","content": your_prompt,}])
+        resp_msg = client.chat.completions.create(model=g4f.models.llama3_70b_instruct, provider=Llama,messages=[{"role": "user","content": your_prompt,}])
         await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
         headers.logger("!chatgpt", inter.author, your_prompt, resp_msg.choices[0].message.content)
     except Exception as chatgpt_error:
         await inter.edit_original_response(embed = headers.req_failed(error=chatgpt_error))
         headers.logger("!chatgpt", inter.author, your_prompt, chatgpt_error)
-@bot.slash_command(description="Convert YouTube video into mp3!")
+@bot.slash_command(description="SD-XL can draw you a picture from the text prompt")
+async def sdxl(inter, *, your_prompt: str): 
+    try:
+        await inter.response.send_message(embed=headers.req_claim())
+        resp_image = client.images.generate(model="stability-ai/sdxl", prompt=your_prompt)
+        image_url = resp_image.data[0].url # get the url of image
+        image_bytes = BytesIO(base64.b64decode(await headers.async_encode_base64(image_url)))
+        await inter.edit_original_response(embed=headers.req_done(" ").set_image(file=disnake.File(image_bytes,"result.png")))
+        headers.logger("!sdxl", inter.author, your_prompt, image_url)
+    except Exception as genimage_error:
+        await inter.edit_original_response(embed = headers.req_failed(error=genimage_error))
+        headers.logger("!sdxl", inter.author, your_prompt, genimage_error)
 async def ytmp3(inter, *, youtube_link: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
