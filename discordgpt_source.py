@@ -10,7 +10,7 @@ from disnake.ext import commands
 ##g4f related
 from g4f.client import Client
 import g4f
-from g4f.Provider import Llama, ReplicateImage
+from g4f.Provider import ReplicateImage, DeepInfra, Llama
 # other related
 from gtts import gTTS
 from pytube import YouTube
@@ -27,7 +27,6 @@ bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all(), help_comma
 g4f.debug.logging = True
 nest_asyncio.apply()
 client = Client(
-    text_provider=Llama,
     image_provider=ReplicateImage
 )
 headers.cleaner() # enable this optionally   
@@ -69,16 +68,26 @@ async def randomcatgif(inter):
                     headers.logger("!randomcatgif", inter.author, "inter", "data")
     except Exception as randomcat_error:
         await inter.edit_original_response(embed = headers.req_failed(randomcat_error))
-@bot.slash_command(description="ChatGPT will write whatever you ask!")
-async def chatgpt(inter, *, your_prompt: str):
+@bot.slash_command(description="Llama is open source LLM that allows you get really good results")
+async def llama(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_msg = client.chat.completions.create(model=g4f.models.llama3_70b_instruct, provider=Llama,messages=[{"role": "user","content": your_prompt,}])
+        resp_msg = client.chat.completions.create(model=g4f.models.llama3_70b_instruct,provider=Llama,messages=[{"role": "user","content": your_prompt,}])
         await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
-        headers.logger("!chatgpt", inter.author, your_prompt, resp_msg.choices[0].message.content)
-    except Exception as chatgpt_error:
-        await inter.edit_original_response(embed = headers.req_failed(error=chatgpt_error))
-        headers.logger("!chatgpt", inter.author, your_prompt, chatgpt_error)
+        headers.logger("!llama", inter.author, your_prompt, resp_msg.choices[0].message.content)
+    except Exception as llama_error:
+        await inter.edit_original_response(embed = headers.req_failed(error=llama_error))
+        headers.logger("!llama", inter.author, your_prompt, llama_error)
+@bot.slash_command(description="Lzlv-70b is open source model that actually doesnt have a censor")
+async def lzlv(inter, *, your_prompt: str):
+    try:
+        await inter.response.send_message(embed=headers.req_claim())
+        resp_msg = client.chat.completions.create(model=g4f.models.lzlv_70b,provider=DeepInfra,messages=[{"role": "user","content": your_prompt,}], api_key="QDeniXtPTDQAj6erPnUNzOTMn99nDJ5K")
+        await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
+        headers.logger("!lzlv", inter.author, your_prompt, resp_msg.choices[0].message.content)
+    except Exception as lzlv_error:
+        await inter.edit_original_response(embed = headers.req_failed(error=lzlv_error))
+        headers.logger("!lzlv", inter.author, your_prompt, lzlv_error)
 @bot.slash_command(description="SD-XL can draw you a picture from the text prompt")
 async def sdxl(inter, *, your_prompt: str): 
     try:
