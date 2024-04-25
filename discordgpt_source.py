@@ -8,7 +8,7 @@ from io import BytesIO
 import disnake
 from disnake.ext import commands
 ##g4f related
-from g4f.client import Client
+from g4f.client import AsyncClient
 import g4f
 from g4f.Provider import ReplicateImage, DeepInfra, Llama
 # other related
@@ -26,7 +26,7 @@ activity = disnake.Activity(
 bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all(), help_command=None,activity=activity)
 g4f.debug.logging = True
 nest_asyncio.apply()
-client = Client(
+client = AsyncClient(
     image_provider=ReplicateImage
 )
 headers.cleaner() # enable this optionally   
@@ -72,7 +72,7 @@ async def randomcatgif(inter):
 async def llama(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_msg = client.chat.completions.create(model=g4f.models.llama3_70b_instruct,provider=Llama,messages=[{"role": "user","content": your_prompt,}])
+        resp_msg = await client.chat.completions.create(model=g4f.models.llama3_70b_instruct,provider=Llama,messages=[{"role": "user","content": your_prompt,}])
         await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
         headers.logger("!llama", inter.author, your_prompt, resp_msg.choices[0].message.content)
     except Exception as llama_error:
@@ -82,17 +82,17 @@ async def llama(inter, *, your_prompt: str):
 async def lzlv(inter, *, your_prompt: str):
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_msg = client.chat.completions.create(model=g4f.models.lzlv_70b,provider=DeepInfra,messages=[{"role": "user","content": your_prompt,}], api_key="QDeniXtPTDQAj6erPnUNzOTMn99nDJ5K")
+        resp_msg = await client.chat.completions.create(model=g4f.models.lzlv_70b,provider=DeepInfra,messages=[{"role": "user","content": your_prompt,}], api_key="QDeniXtPTDQAj6erPnUNzOTMn99nDJ5K")
         await inter.edit_original_response(embed=headers.req_done(resp_msg.choices[0].message.content))
-        headers.logger("!lzlv", inter.author, your_prompt, resp_msg.choices[0].message.content)
+        headers.logger("!chatgpt", inter.author, your_prompt, resp_msg.choices[0].message.content)
     except Exception as lzlv_error:
         await inter.edit_original_response(embed = headers.req_failed(error=lzlv_error))
-        headers.logger("!lzlv", inter.author, your_prompt, lzlv_error)
+        headers.logger("!chatgpt", inter.author, your_prompt, lzlv_error)
 @bot.slash_command(description="SD-XL can draw you a picture from the text prompt")
 async def sdxl(inter, *, your_prompt: str): 
     try:
         await inter.response.send_message(embed=headers.req_claim())
-        resp_image = client.images.generate(model="stability-ai/sdxl", prompt=your_prompt)
+        resp_image = await client.images.generate(model="stability-ai/sdxl", prompt=your_prompt)
         image_url = resp_image.data[0].url # get the url of image
         image_bytes = BytesIO(base64.b64decode(await headers.async_encode_base64(image_url)))
         await inter.edit_original_response(embed=headers.req_done(" ").set_image(file=disnake.File(image_bytes,"result.png")))
