@@ -61,8 +61,8 @@ Replace the placeholders with your actual credentials.
 **What are these credentials?**
 
 * `BOT_TOKEN`: Your Discord bot token, obtained from the Discord Developer Portal.
-* `DEEPINFRA_TOKEN`: Your https://deepinfra.com api key, for ai-text generation functions.
-* `BING_COOKIES`: Your cookies, required for !vision functionality. (More information on obtaining cookies can be found in the [wiki](https://example.com/wiki/obtaining-cookies)).
+* `DEEPINFRA_TOKEN`: Your [DeepInfra](https://deepinfra.com) api key, for ai-text generation functions.
+* `BING_COOKIES`: Your cookies, required for !vision functionality. (More information on obtaining cookies can be found in the [wiki](https://en.wikipedia.org/wiki/HTTP_cookie)).
 
 **INVITE-ME**
 ---------------
