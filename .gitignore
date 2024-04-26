@@ -1,8 +1,4 @@
-
 /__pycache__
-/files/rembg/*
-/files/gtts/*
-/files/ytmp3/*
-token.txt
-logs/logsDS.txt
-bot_token.txt
+credentials.json
+bot.log
+/user_cache/*

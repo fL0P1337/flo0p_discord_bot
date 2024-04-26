@@ -1,3 +1,4 @@
+# Import required modules
 import datetime
 import shutil
 import os
@@ -5,11 +6,56 @@ from datetime import datetime
 import disnake
 import base64
 import aiohttp
+import json
+import logging
 time = datetime.now()
 
-def get_bot_token(): #function to get discord bot token using bot_token.txt
-     bot_token = open("bot_token.txt",)
-     return bot_token.read()
+# Set up the logger
+logger = logging.getLogger('discord_bot_logger')
+logger.setLevel(logging.INFO)
+
+# Create a file handler to log to a file
+file_handler = logging.FileHandler('bot.log')
+file_handler.setLevel(logging.INFO)
+
+# Create a formatter and attach it to the file handler
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+
+# Add the file handler to the logger
+logger.addHandler(file_handler)
+
+# Define a logger function to log command usages and bot startups
+def log_event(event_type, *args, **kwargs):
+    if event_type == 'command_usage':
+        logger.info(f'Command "{args[0]}" used by {args[1].author} (ID: {args[1].author.id}) in channel {args[1].channel} (ID: {args[1].channel.id})')
+    elif event_type == 'bot_startup':
+        logger.info('Bot has started')
+    elif event_type == 'user_prompt':
+        logger.info(f'User {args[0].author} (ID: {args[0].author.id}) sent prompt: "{args[0].content}"')
+    elif event_type == 'bot_response':
+        logger.info(f'Bot responded to {args[0].author} (ID: {args[0].author.id}) with: "{args[1]}"')
+    elif event_type == 'command_args':
+        logger.info(f'Command "{args[0]}" received args: {args[1]}')
+
+def load_credentials():
+    # Load credentials from file
+    credentials_file = os.path.join(os.path.dirname(__file__), 'credentials.json')
+    with open(credentials_file, 'r') as f:
+        credentials = json.load(f)
+        for line in f.readlines():
+            key, value = line.strip().split('=')
+            credentials[key] = value.strip()  # Remove any whitespace
+            print(f"Loaded credential: {key} = {value}")
+    # Return a dictionary with the loaded credentials
+    return credentials
+
+
+def get_credential(key):
+    # Load credentials and return the value for the given key
+    credentials = load_credentials()
+    return credentials.get(key)
+
 def help_msg():
     embed = disnake.Embed(
         title="Welcome! Here's a list of available functions:",
@@ -28,7 +74,8 @@ def help_msg():
 
     embed.add_field(
         name="Text-to-Image Models",
-        value="/sdxl [your_prompt] - Stabble Diffusion XL can draw anything from your text prompt\n",
+        value="/sdxl [your_prompt] - Stabble Diffusion XL can draw anything from your text prompt\n"
+              "!vision [your_prompt] - Classify an image using text prompt, it can describe, read and etc\n",
         inline=False
     )
     
@@ -89,7 +136,8 @@ def req_claim():
 
 def req_failed(error):
     embed = disnake.Embed(
-        title=f"There's been an error! Try re-posting your request.\nError code: {error}",
+        title=f"There's been an error! Try re-posting your request.\nError code:",
+        description=error,
         colour=0xF0C43F,
         timestamp=datetime.now()
     )
@@ -105,15 +153,11 @@ def req_done(description: str) -> disnake.Embed:
     )
     return embed
 
-def logger(used_command, username, used_prompt, got_response):
-    log_msg = f"\n[USER_CMD] {time.time()}: {username} used {used_command} with prompt -> {used_prompt} and got the response -> {got_response}"
-    with open('logs/logsDS.txt', 'a') as f:
-        f.write(log_msg + '\n')
-    print(log_msg)
+
     
 def cleaner():
     """Clean cached user files"""
-    dirs_path = ["files/rembg", "files/gtts", "files/ytmp3"]
+    dirs_path = ["user_cache"]
     for folder in dirs_path:
         for root, dirs, files in os.walk(folder):
             for file in files:
