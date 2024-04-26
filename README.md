@@ -12,7 +12,7 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 
 ### Generate Images from Text
 
-* `!sdxl [your_prompt]` - Stable Diffusion XL can draw anything from your text prompt
+* `/sdxl [your_prompt]` - Stable Diffusion XL can draw anything from your text prompt
 * `!vision [your_prompt]` - Classify an image using text prompt, it can describe, read, and more
 
 **Text Generation Models**
@@ -20,31 +20,31 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 
 ### Get Creative with AI-powered Text Generation
 
-* `!llama [your_prompt]` - Llama is an open-source LLM that allows you to get really good results
-* `!lzlv [your_prompt]` - Lzlv-70b is an open-source model that actually doesn't have a censor
+* `/llama [your_prompt]` - Llama is an open-source LLM that allows you to get really good results
+* `/lzlv [your_prompt]` - Lzlv-70b is an open-source model that actually doesn't have a censor
 
 **Utility Functions**
 -------------------
 
 ### Convert Text to Speech
 
-* `!gtts [language: ru, en, fr, pt, es] [your_message]` - Google text-to-speech will convert your message to speech!
+* `/gtts [language: ru, en, fr, pt, es] [your_message]` - Google text-to-speech will convert your message to speech!
 
 ### Convert YouTube Videos to MP3
 
-* `!ytmp3 [youtube_link]` - Convert YouTube video into mp3!
+* `/ytmp3 [youtube_link]` - Convert YouTube video into mp3!
 
 ### Check Bot Credits
 
-* `!credits` - Will show you credits like used libs and author of this bot
+* `/credits` - Will show you credits like used libs and author of this bot
 
 **Fun Functions**
 -----------------
 
 ### Get Your Daily Dose of Cuteness
 
-* `!randomcat` - Use this to receive a random cat image
-* `!randomcatgif` - Use this to receive a random cat gif
+* `/randomcat` - Use this to receive a random cat image
+* `/randomcatgif` - Use this to receive a random cat gif
 
 **Authentication**
 ----------------
