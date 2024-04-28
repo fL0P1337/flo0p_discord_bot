@@ -240,6 +240,43 @@ async def lzlv(inter, *, your_prompt: str):
         error_message = f"Error: {e}"
         await inter.edit_original_response(embed=headers.req_failed(error=error_message))
 
+@bot.slash_command(description="Bing is LLM created by Microsoft, uses gpt-4 model")
+async def bing(inter, *, your_prompt: str):
+    """
+    Handle the /bing command, which uses the Bing AI model to generate a response
+    to a user-provided prompt.
+
+    Args:
+        inter: The interaction object from Discord.py
+        your_prompt: The user-provided prompt to generate a response for
+    """
+    try:
+        # Send a "loading" message to the user
+        await inter.response.send_message(embed=headers.req_claim())
+
+        # Create a completion request to the Bing AI model
+        response = await client.chat.completions.create(
+            # Use the Bing model
+            model=g4f.models.default,
+            # Provide the user's prompt as input
+            messages=[{"role": "user", "content": your_prompt}],
+            provider=Bing
+        )
+
+        # Extract the generated response from the API response
+        result = response.choices[0].message.content
+
+        # Edit the original response to show the generated result
+        await inter.edit_original_response(embed=headers.req_done(result))
+
+        # Log the interaction and result
+        headers.log_event('command_usage', 'bing', inter)
+        headers.log_event('bot_response', inter, result)
+    except Exception as e:
+        # Catch any exceptions and log the error
+        error_message = str(e)
+        await inter.edit_original_response(embed=headers.req_failed(error=error_message))
+        headers.log_event('bot_response', inter, error_message)
 
 @bot.slash_command(description="SD-XL can draw you a picture from the text prompt")
 async def sdxl(inter, *, your_prompt: str):
