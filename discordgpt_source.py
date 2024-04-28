@@ -306,39 +306,43 @@ async def sdxl(inter, *, your_prompt: str):
         headers.log_event('command_usage', 'randomcatgif', genimage_error)
 
 @bot.command()
-async def vision(ctx, prompt):
+async def vision(ctx):
     try:
         # Check if the user has attached an image
         if not ctx.message.attachments:
             await ctx.reply(embed=headers.req_failed("Please attach an image to classify!"))
             return
-        
+
         await ctx.reply(embed=headers.req_claim())
-        
+
         # Download the attached image
         attachment = ctx.message.attachments[0]
         image_data = await attachment.read()
-        image_path = f"user_cache/{attachment.filename}"
-        with open(image_path, 'wb') as f:
-            f.write(image_data)
-        
+
+        # Use BytesIO object to store image data in memory
+        image_stream = io.BytesIO(image_data)
+
         # Create the chat completion request
         response = await client.chat.completions.create(
-            model="gpt-4-vision",
-            provider=Bing,
-            messages=[{"role": "user", "content": prompt}],
-            image=open(image_path, "rb")
+            model="llava-hf/llava-1.5-7b-hf",
+            provider=DeepInfra,
+            messages=[{"role": "user", "content": "Given an image, identify and describe the main subjects and elements present. Provide a detailed description of the scene, including objects, colors, activities, and any text that may be visible. Highlight the context of the image and any notable features that could be relevant for classification purposes."}],
+            image=image_stream
         )
-        
+
         response_content = response.choices[0].message.content
-        
+
+        # Reset stream position to the beginning
+        image_stream.seek(0)
+
         # Send the classification result back to the user
-        await ctx.reply(embed=headers.req_done(response_content).set_image(file=disnake.File(image_path, "Image.png")))
+        await ctx.reply(embed=headers.req_done(response_content).set_image(file=disnake.File(fp=image_stream, filename="image.png")))
         headers.log_event('command_usage', 'vision', ctx)
         headers.log_event('bot_response', ctx, response_content)
+
     except aiohttp.ClientError as e:
         await ctx.reply(embed=headers.req_failed(f"Error connecting to API: {e}"))
-    
+
     except Exception as e:
         await ctx.reply(embed=headers.req_failed(f"An error occurred: {e}"))
         
