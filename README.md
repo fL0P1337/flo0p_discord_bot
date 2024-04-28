@@ -50,12 +50,13 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 ----------------
 
 To use this bot, you'll need to provide your credentials in the `credentials.json` file. This file should be in the following format:
-
+```json
 {
 "BOT_TOKEN": "YOUR_DISCORD_BOT_TOKEN",
 "DEEPINFRA_TOKEN": "YOUR_DEEPINFRA_API_KEY",
 "BING_COOKIES": "COOKIES_FROM_BING.COM"
 }
+```
 Replace the placeholders with your actual credentials.
 
 **What are these credentials?**
