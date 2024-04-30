@@ -13,7 +13,7 @@ from disnake.ext import commands
 # Import G4F modules
 from g4f.client import AsyncClient
 import g4f
-from g4f.Provider import ReplicateImage, DeepInfra, Bing
+from g4f.Provider import ReplicateImage, DeepInfra, Bing, Reka
 from g4f.cookies import set_cookies
 
 # Import other modules
@@ -27,6 +27,9 @@ import nest_asyncio
 
 # Import custom headers module
 import headers
+
+# Import Openai module
+from openai import OpenAI
 
 # Define bot activity
 activity = disnake.Activity(
@@ -51,10 +54,20 @@ nest_asyncio.apply()
 # Create G4F client instance with ReplicateImage provider
 client = AsyncClient(image_provider=ReplicateImage)
 
+# Create an OpenAI client with your deepinfra token and endpoint
+deepinfra_client = OpenAI(
+    api_key=headers.get_credential("DEEPINFRA_TOKEN"),
+    base_url="https://api.deepinfra.com/v1/openai",
+)
+
 # Set Bing Cookies (!vision function)
 set_cookies(".bing.com",
             {
                 "_U" : headers.get_credential('BING_COOKIES')
+})
+set_cookies("chat.reka.ai",
+            {
+                "appSession" : headers.get_credential('REKA_COOKIES')
 })
 
 @bot.event
@@ -183,13 +196,11 @@ async def llama(inter, *, your_prompt: str):
         await inter.response.send_message(embed=headers.req_claim())
 
         # Create a completion request to the Llama AI model
-        response = await client.chat.completions.create(
+        response = deepinfra_client.chat.completions.create(
             # Use the Llama 3 70B instruct model
-            model=g4f.models.llama3_70b_instruct,
+            model="meta-llama/Meta-Llama-3-70B-Instruct",
             # Provide the user's prompt as input
             messages=[{"role": "user", "content": your_prompt}],
-            # Use an API key for authentication
-            api_key=headers.get_credential('DEEPINFRA_TOKEN')
         )
 
         # Extract the generated response from the API response
@@ -217,12 +228,9 @@ async def lzlv(inter, *, your_prompt: str):
         await inter.response.send_message(embed=headers.req_claim())
         
         # Create a completion request to the Lzlv-70b model
-        response = await client.chat.completions.create(
-            model=g4f.models.lzlv_70b,  # specify the model to use
-            provider=DeepInfra,  # specify the provider
+        response = deepinfra_client.chat.completions.create(
+            model="lizpreciatior/lzlv_70b_fp16_hf",  # specify the model to use
             messages=[{"role": "user", "content": your_prompt}],  # define the input message
-            # Use an API key for authentication
-            api_key=headers.get_credential('DEEPINFRA_TOKEN')
         )
         
         # Extract the response content from the completion response
@@ -257,15 +265,13 @@ async def bing(inter, *, your_prompt: str):
         # Create a completion request to the Bing AI model
         response = await client.chat.completions.create(
             # Use the Bing model
-            model=g4f.models.default,
+            model="Creative",
             # Provide the user's prompt as input
             messages=[{"role": "user", "content": your_prompt}],
-            provider=Bing
+            provider=Bing,
         )
-
         # Extract the generated response from the API response
         result = response.choices[0].message.content
-
         # Edit the original response to show the generated result
         await inter.edit_original_response(embed=headers.req_done(result))
 
@@ -306,7 +312,7 @@ async def sdxl(inter, *, your_prompt: str):
         headers.log_event('command_usage', 'randomcatgif', genimage_error)
 
 @bot.command()
-async def vision(ctx):
+async def vision(ctx, your_prompt: str):
     try:
         # Check if the user has attached an image
         if not ctx.message.attachments:
@@ -324,9 +330,9 @@ async def vision(ctx):
 
         # Create the chat completion request
         response = await client.chat.completions.create(
-            model="llava-hf/llava-1.5-7b-hf",
-            provider=DeepInfra,
-            messages=[{"role": "user", "content": "Given an image, identify and describe the main subjects and elements present. Provide a detailed description of the scene, including objects, colors, activities, and any text that may be visible. Highlight the context of the image and any notable features that could be relevant for classification purposes."}],
+            model="reka",
+            provider=Reka,
+            messages=[{"role": "user", "content": your_prompt}],
             image=image_stream
         )
 
@@ -345,7 +351,6 @@ async def vision(ctx):
 
     except Exception as e:
         await ctx.reply(embed=headers.req_failed(f"An error occurred: {e}"))
-        
 @bot.slash_command(description="Convert YouTube video into mp3!")
 async def ytmp3(inter, *, youtube_link: str):
     """
