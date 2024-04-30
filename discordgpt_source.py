@@ -29,7 +29,7 @@ import nest_asyncio
 import headers
 
 # Import Openai module
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 # Define bot activity
 activity = disnake.Activity(
@@ -55,7 +55,7 @@ nest_asyncio.apply()
 client = AsyncClient(image_provider=ReplicateImage)
 
 # Create an OpenAI client with your deepinfra token and endpoint
-deepinfra_client = OpenAI(
+deepinfra_client = AsyncOpenAI(
     api_key=headers.get_credential("DEEPINFRA_TOKEN"),
     base_url="https://api.deepinfra.com/v1/openai",
 )
@@ -196,7 +196,7 @@ async def llama(inter, *, your_prompt: str):
         await inter.response.send_message(embed=headers.req_claim())
 
         # Create a completion request to the Llama AI model
-        response = deepinfra_client.chat.completions.create(
+        response = await deepinfra_client.chat.completions.create(
             # Use the Llama 3 70B instruct model
             model="meta-llama/Meta-Llama-3-70B-Instruct",
             # Provide the user's prompt as input
@@ -228,7 +228,7 @@ async def lzlv(inter, *, your_prompt: str):
         await inter.response.send_message(embed=headers.req_claim())
         
         # Create a completion request to the Lzlv-70b model
-        response = deepinfra_client.chat.completions.create(
+        response = await deepinfra_client.chat.completions.create(
             model="lizpreciatior/lzlv_70b_fp16_hf",  # specify the model to use
             messages=[{"role": "user", "content": your_prompt}],  # define the input message
         )

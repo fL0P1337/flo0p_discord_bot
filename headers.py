@@ -15,7 +15,7 @@ logger = logging.getLogger('discord_bot_logger')
 logger.setLevel(logging.INFO)
 
 # Create a file handler to log to a file
-file_handler = logging.FileHandler('bot.log')
+file_handler = logging.FileHandler('bot.log', encoding='utf-8')
 file_handler.setLevel(logging.INFO)
 
 # Create a formatter and attach it to the file handler
