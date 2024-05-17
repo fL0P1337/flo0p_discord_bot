@@ -57,6 +57,7 @@ To use this bot, you'll need to provide your credentials in the `credentials.jso
 "BOT_TOKEN": "YOUR_DISCORD_BOT_TOKEN",
 "DEEPINFRA_TOKEN": "YOUR_DEEPINFRA_API_KEY",
 "BING_COOKIES": "COOKIES_FROM_BING.COM"
+"REKA_COOKIES" : "COOKIES_FROM_REKA.AI"
 }
 ```
 Replace the placeholders with your actual credentials.
