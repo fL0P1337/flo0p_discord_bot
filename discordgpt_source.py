@@ -13,7 +13,7 @@ from disnake.ext import commands
 # Import G4F modules
 from g4f.client import AsyncClient
 import g4f
-from g4f.Provider import ReplicateImage, DeepInfra, Bing, Reka
+from g4f.Provider import ReplicateImage, HuggingChat, Bing, Reka
 from g4f.cookies import set_cookies
 
 # Import other modules
@@ -68,6 +68,10 @@ set_cookies(".bing.com",
 set_cookies("chat.reka.ai",
             {
                 "appSession" : headers.get_credential('REKA_COOKIES')
+})
+set_cookies("huggingface.co",
+            {
+                "hf-chat" : headers.get_credential('HUGGINGFACE_COOKIES')
 })
 
 @bot.event
@@ -180,6 +184,44 @@ async def randomcatgif(inter):
         # Catch any other exceptions and send an error message
         await inter.edit_original_response(embed=headers.req_failed(str(error)))
 
+@bot.slash_command(description="cohere is open source LLM that beats gpt-4")
+async def cohere(inter, *, your_prompt: str):
+    """
+    Handle the /cohere command, which uses the Llama AI model to generate a response
+    to a user-provided prompt.
+
+    Args:
+        inter: The interaction object from Discord.py
+        your_prompt: The user-provided prompt to generate a response for
+    """
+    try:
+        # Send a "loading" message to the user
+        await inter.response.send_message(embed=headers.req_claim())
+
+        # Create a completion request to the Llama AI model
+        response = await client.chat.completions.create(
+            # Use the command-r-plus model
+            model=g4f.models.command_r_plus,
+            # Provide the user's prompt as input
+            messages=[{"role": "user", "content": your_prompt}],
+            # specify the provider
+            provider=HuggingChat
+        )
+
+        # Extract the generated response from the API response
+        result = response.choices[0].message.content
+
+        # Edit the original response to show the generated result
+        await inter.edit_original_response(embed=headers.req_done(result))
+
+        # Log the interaction and result
+        headers.log_event('command_usage', 'cohere', inter)
+        headers.log_event('bot_response', inter, result)
+    except Exception as e:
+        # Catch any exceptions and log the error
+        error_message = str(e)
+        await inter.edit_original_response(embed=headers.req_failed(error=error_message))
+        headers.log_event('bot_response', inter, error_message)
 
 @bot.slash_command(description="Llama is open source LLM that allows you get really good results")
 async def llama(inter, *, your_prompt: str):
@@ -265,7 +307,7 @@ async def bing(inter, *, your_prompt: str):
         # Create a completion request to the Bing AI model
         response = await client.chat.completions.create(
             # Use the Bing model
-            model="Creative",
+            model="Copilot",
             # Provide the user's prompt as input
             messages=[{"role": "user", "content": your_prompt}],
             provider=Bing,
@@ -333,7 +375,7 @@ async def vision(ctx, your_prompt: str):
             model="reka",
             provider=Reka,
             messages=[{"role": "user", "content": your_prompt}],
-            image=image_stream
+            image=image_stream,
         )
 
         response_content = response.choices[0].message.content
@@ -471,4 +513,4 @@ async def rembg(ctx):
         # Log the error
 
 # Run the bot
-bot.run(headers.get_credential('BOT_TOKEN'))    
+bot.run(headers.get_credential('BOT_TOKEN'))

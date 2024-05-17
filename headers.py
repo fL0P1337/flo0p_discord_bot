@@ -83,7 +83,8 @@ def help_msg():
         name="Text-Generation Models",
         value="/llama [your_prompt] - Llama is open source LLM that allows you get really good results\n"
               "/lzlv [your_prompt] - Lzlv-70b is open source model that actually doesn't have a censor\n"
-              "/bing [your_prompt] - Bing is LLM created by Microsoft, uses gpt-4 model",
+              "/bing [your_prompt] - Bing is LLM created by Microsoft, uses gpt-4 model\n"
+              "/cohere [your_prompt] - CommandR+ is open source LLM, designed to beat openai's gpt-4 ",
         inline=False
     )
 

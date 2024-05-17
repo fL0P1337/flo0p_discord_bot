@@ -23,7 +23,8 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 * `/llama [your_prompt]` - Llama is an open-source LLM that allows you to get really good results
 * `/lzlv [your_prompt]` - Lzlv-70b is an open-source model that actually doesn't have a censor
 * `/bing [your_prompt]` - Bing is LLM created by Microsoft, uses gpt-4 model
-
+* `/cohere [your_prompt]` - CommandR+ is open source LLM, designed to beat openai's gpt-4 
+ 
 **Utility Functions**
 -------------------
 
