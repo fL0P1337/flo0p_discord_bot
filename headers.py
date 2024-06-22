@@ -66,7 +66,7 @@ def help_msg():
 
     embed.add_field(
         name="Image-Functions",
-        value="!rembg - Remove background from any photos using AI\n"
+        value="!removebg - Remove background from any photos using AI\n"
               #"!imgtotxt - Extract text from image, supports Russian and English languages"
               ,
         inline=False
@@ -74,7 +74,7 @@ def help_msg():
 
     embed.add_field(
         name="Text-to-Image Models",
-        value="/sdxl [your_prompt] - Stabble Diffusion XL can draw anything from your text prompt\n"
+        value="/stabblediffusion [your_prompt] - Stabble Diffusion XL can draw anything from your text prompt\n"
               "!vision [your_prompt] - Classify an image using text prompt, it can describe, read and etc\n",
         inline=False
     )
@@ -83,48 +83,23 @@ def help_msg():
         name="Text-Generation Models",
         value="/llama [your_prompt] - Llama is open source LLM that allows you get really good results\n"
               "/lzlv [your_prompt] - Lzlv-70b is open source model that actually doesn't have a censor\n"
-              "/bing [your_prompt] - Bing is LLM created by Microsoft, uses gpt-4 model\n"
-              "/cohere [your_prompt] - CommandR+ is open source LLM, designed to beat openai's gpt-4 ",
+              "/bing [your_prompt] - Bing is LLM created by Microsoft, uses gpt-4 model\n",
         inline=False
     )
-
-    embed.add_field(
-        name="Utility-Functions",
-        value="/gtts [language: ru, en, fr, pt, es] [your_message] - Google text to speech will convert your message to speech!\n"
-              "/ytmp3 [youtube_link] - Convert YouTube video into mp3!\n"
-              "/credits - Will show you credits like used libs and author of this bot\n",
-        inline=False
-    )
-
     embed.add_field(
         name="Fun-Functions",
         value="/randomcat - Use this to receive random cat image \n"
-              "/randomcatgif - Use this to receive random cat gif \n",
+              "/randomcatgif - Use this to receive random cat gif \n"
+              "/yt2mp3 [youtube_link] - Convert YouTube video into mp3!\n",
+        inline=False
+    )
+    embed.add_field(
+        name="GitHub Repository",
+        value="https://github.com/fL0P1337/flo0p_discord_bot\n",
         inline=False
     )
 
     return embed
-
-def credits_msg():
-    """
-    Create the /credits embed message content
-    """
-    credit_msg = disnake.Embed(
-        title="Credits!",
-        description=(
-            "Used libraries:\n"
-            "• disnake\n"
-            "• pytube\n"
-            "• g4f\n"
-            "• nest_asyncio\n"
-            "• gtts\n"
-            "• rembg\n"
-            "\nMade by: flo0p1337"
-        ),
-        color=0xF0C43F,
-        timestamp=datetime.now()
-    )
-    return credit_msg
 
 def req_claim():
     """Returns an embed message for request claim"""

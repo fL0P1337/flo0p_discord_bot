@@ -106,7 +106,7 @@ async def randomcatgif(inter):
         await inter.edit_original_response(embed=headers.req_failed(f"Failed to connect to {url}: {client_error}"))
     except Exception as error:
         await inter.edit_original_response(embed=headers.req_failed(str(error)))
-        
+
 @bot.slash_command(description="Llama is open source LLM that allows you get really good results")
 async def llama(inter, *, your_prompt: str):
     await inter.response.send_message(embed=headers.req_claim())
@@ -213,16 +213,6 @@ async def yt2mp3(inter, url: str):
     await inter.edit_original_response(embed=headers.req_done(f"Audio is ready: {yt.title}").set_file(file=disnake.File(audio_path)))
     os.remove(audio_path)
     headers.log_event('command_usage', 'yt2mp3', inter)
-
-@bot.slash_command(description="Convert text to speech")
-async def text2speech(inter, *, text: str, lang: str = 'en'):
-    await inter.response.send_message(embed=headers.req_claim())
-    tts = gTTS(text, lang=lang)
-    audio_path = f"output_{inter.id}.mp3"
-    tts.save(audio_path)
-    await inter.edit_original_response(embed=headers.req_done(" ").set_file(file=disnake.File(audio_path)))
-    os.remove(audio_path)
-    headers.log_event('command_usage', 'text2speech', inter)
 
 # Run the bot
 bot.run(headers.get_credential("DISCORD_TOKEN"))

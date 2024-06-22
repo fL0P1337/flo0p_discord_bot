@@ -27,10 +27,6 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 **Utility Functions**
 -------------------
 
-### Convert Text to Speech
-
-* `/text2speech [text] [lang: en, ru, fr, pt, es]` - Google text-to-speech will convert your message to speech.
-
 ### Convert YouTube Videos to MP3
 
 * `/yt2mp3 [youtube_link]` - Convert YouTube videos into MP3 files.
