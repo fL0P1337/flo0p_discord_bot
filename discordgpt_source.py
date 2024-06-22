@@ -64,11 +64,6 @@ async def help(ctx):
     await ctx.reply(embed=headers.help_msg())
     headers.log_event('command_usage', 'help', ctx)
 
-@bot.slash_command(description="Will show you credits like used libs and author of this bot")
-async def credits(inter):
-    await inter.response.send_message(embed=headers.credits_msg())
-    headers.log_event('command_usage', 'credits', inter)
-
 @bot.slash_command(description="Receive random cat image")
 async def randomcat(inter):
     try:
