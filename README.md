@@ -8,12 +8,12 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 
 ### Remove Background from Images
 
-* `!removebg` - Remove the background from any photo using AI-powered models.
+* `/removebg` - Remove the background from any photo using AI-powered models.
 
 ### Generate Images from Text
 
 * `/stabblediffusion [your_prompt]` - Generate images from text using the Stable Diffusion 3 model by Stability.ai.
-* `!vision [your_prompt]` - Classify an image using text prompt, it can describe, read, and more
+* `/vision [your_prompt]` - Classify an image using text prompt, it can describe, read, and more
 
 **Text Generation Models**
 -------------------------

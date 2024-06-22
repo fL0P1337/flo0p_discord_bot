@@ -66,16 +66,14 @@ def help_msg():
 
     embed.add_field(
         name="Image-Functions",
-        value="!removebg - Remove background from any photos using AI\n"
-              #"!imgtotxt - Extract text from image, supports Russian and English languages"
-              ,
+        value="/removebg - Remove background from any photos using AI\n",
         inline=False
     )
 
     embed.add_field(
         name="Text-to-Image Models",
         value="/stabblediffusion [your_prompt] - Stabble Diffusion XL can draw anything from your text prompt\n"
-              "!vision [your_prompt] - Classify an image using text prompt, it can describe, read and etc\n",
+              "/vision [your_prompt] - Classify an image using text prompt, it can describe, read and etc\n",
         inline=False
     )
     

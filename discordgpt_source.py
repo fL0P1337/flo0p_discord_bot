@@ -2,9 +2,9 @@
 import os
 import datetime
 import aiohttp
-import base64
 import io
 from io import BytesIO
+import asyncio
 
 # Import Discord libraries
 import disnake
@@ -13,11 +13,10 @@ from disnake.ext import commands
 # Import G4F libraries
 from g4f.client import AsyncClient
 import g4f
-from g4f.Provider import ReplicateImage, HuggingChat, Bing, Reka
+from g4f.Provider import Bing, Reka
 from g4f.cookies import set_cookies
 
 # Import other libraries
-from gtts import gTTS
 from pytube import YouTube
 from rembg import remove
 from PIL import Image
@@ -34,17 +33,21 @@ from openai import AsyncOpenAI
 # Import replicate module
 import replicate
 
-
 # Bot activity and instance creation
 activity = disnake.Activity(name="!help / Currently working", type=disnake.ActivityType.playing)
-bot = commands.Bot(command_prefix='!', intents=disnake.Intents.all(), help_command=None, activity=activity)
+bot = commands.Bot(
+    command_prefix='!',
+    intents=disnake.Intents.all(),
+    help_command=None,
+    activity=activity
+)
 
 # Enable G4F debug logging and apply nest_asyncio
 g4f.debug.logging = True
 nest_asyncio.apply()
 
 # Create G4F and OpenAI client instances
-client = AsyncClient(image_provider=ReplicateImage)
+client = AsyncClient(image_provider=Reka)
 deepinfra_client = AsyncOpenAI(api_key=headers.get_credential("DEEPINFRA_TOKEN"), base_url="https://api.deepinfra.com/v1/openai")
 
 # Set cookies for Bing, Reka, and Huggingface
@@ -52,6 +55,7 @@ set_cookies(".bing.com", {"_U": headers.get_credential('BING_COOKIES')})
 set_cookies("chat.reka.ai", {"appSession": headers.get_credential('REKA_COOKIES')})
 set_cookies("huggingface.co", {"hf-chat": headers.get_credential('HUGGINGFACE_COOKIES')})
 
+# Event handler for bot readiness
 @bot.event
 async def on_ready():
     current_time = datetime.datetime.now()
@@ -59,7 +63,8 @@ async def on_ready():
     headers.log_event('bot_startup')
     print(f"\n[INFO] {ready_message}")
 
-@bot.command()
+# Command handlers
+@bot.slash_command(description="Receive help information")
 async def help(ctx):
     await ctx.reply(embed=headers.help_msg())
     headers.log_event('command_usage', 'help', ctx)
@@ -71,7 +76,7 @@ async def randomcat(inter):
         async with aiohttp.ClientSession() as session:
             async with session.get('https://cataas.com/cat') as resp:
                 if resp.status == 200:
-                    data = io.BytesIO(await resp.read())
+                    data = BytesIO(await resp.read())
                     file = disnake.File(data, "cool_image.png")
                     embed = headers.req_done(" ").set_image(file=file)
                     await inter.edit_original_response(embed=embed)
@@ -90,9 +95,9 @@ async def randomcatgif(inter):
         async with aiohttp.ClientSession() as session:
             url = 'https://cataas.com/cat/gif'
             async with session.get(url) as resp:
-                if resp.status != 200:
+                if resp.status!= 200:
                     raise Exception(f"Failed to retrieve GIF from {url}")
-                data = io.BytesIO(await resp.read())
+                data = BytesIO(await resp.read())
                 file = disnake.File(data, "cool_gif.gif")
                 embed = headers.req_done(" ").set_image(file=file)
                 await inter.edit_original_response(embed=embed)
@@ -159,41 +164,41 @@ async def stabblediffusion(inter, *, your_prompt: str):
     try:
         replicate_client = {
             "prompt": your_prompt,
-            "negative_prompt": "censored, deformed, bad anatomy, disfigured, poorly drawn face, mutated, extra limb, ugly, poorly drawn hands, missing limb, floating limbs, disconnected limbs, disconnected head, malformed hands, long neck, mutated hands and fingers, bad hands, missing fingers, cropped, worst quality, low quality, mutation, poorly drawn, huge calf, bad hands, fused hand, missing hand, disappearing arms, disappearing thigh, disappearing calf, disappearing legs, missing fingers, fused fingers, abnormal eye proportion, Abnormal hands, abnormal legs, abnormal feet, abnormal fingers, (worst quality, low quality, normal quality:2), (blurry:1.2) <UnrealisticDream> <negative_hand-neg>",
             "aspect_ratio": "1:1",
             "output_quality": 100,
             "output_format": "png",
         }
-        output = replicate.run("stability-ai/stable-diffusion-3", input=replicate_client)
+
+        # Use asyncio.to_thread to run the blocking code in a separate thread
+        output = await asyncio.to_thread(replicate.run, "stability-ai/stable-diffusion-3", input=replicate_client)
+
         await inter.edit_original_response(embed=headers.req_done(" ").set_image(url=output[0]))
         headers.log_event('command_usage', 'stabblediffusion', inter)
     except Exception as genimage_error:
         await inter.edit_original_response(embed=headers.req_failed(error=genimage_error))
         headers.log_event('command_usage', 'stabblediffusion', genimage_error)
 
-@bot.command()
-async def vision(ctx, *, text: str):
-    await ctx.reply(embed=headers.req_claim())
+@bot.slash_command(description="Classify an image using text prompt, it can describe, read, and more")
+async def vision(inter, file: disnake.Attachment, text: str):
+    await inter.response.send_message(embed=headers.req_claim())
     try:
-        # Here you can use any function to convert the text to image.
-        response = await client.image.generate(prompt=text, provider=ReplicateImage)
-        if isinstance(response, disnake.File):
-            await ctx.send(embed=headers.req_done(" ").set_image(file=response))
-        else:
-            await ctx.send(embed=headers.req_done(" ").set_image(url=response[0]))
-        headers.log_event('command_usage', 'vision', ctx)
-        headers.log_event('bot_response', ctx, response)
+        image_data = await file.read()
+        image_stream = BytesIO(image_data)
+        response = await client.chat.completions.create(model="Reka", messages=[{"role": "user", "content": text}], image=image_stream, provider=Reka)
+        await inter.edit_original_response(embed=headers.req_done(response.choices[0].message.content).set_image(url=file))
+        headers.log_event('command_usage', 'vision', inter)
+        headers.log_event('bot_response', inter, response)
     except Exception as e:
-        await ctx.send(embed=headers.req_failed(error=str(e)))
+        await inter.send(embed=headers.req_failed(error=str(e)))
         headers.log_event('command_usage', 'vision', str(e))
 
 @bot.slash_command(description="Remove background from the image")
 async def removebg(inter, file: disnake.Attachment):
     await inter.response.send_message(embed=headers.req_claim())
     image_data = await file.read()
-    input_image = Image.open(io.BytesIO(image_data))
+    input_image = Image.open(BytesIO(image_data))
     output_image = remove(input_image)
-    output_buffer = io.BytesIO()
+    output_buffer = BytesIO()
     output_image.save(output_buffer, format="PNG")
     output_buffer.seek(0)
     await inter.edit_original_response(embed=headers.req_done(" ").set_image(file=disnake.File(output_buffer, "no_bg.png")))
@@ -203,10 +208,9 @@ async def removebg(inter, file: disnake.Attachment):
 async def yt2mp3(inter, url: str):
     await inter.response.send_message(embed=headers.req_claim())
     yt = YouTube(url)
-    audio = yt.streams.filter(only_audio=True).first()
-    audio_path = audio.download()
-    await inter.edit_original_response(embed=headers.req_done(f"Audio is ready: {yt.title}").set_file(file=disnake.File(audio_path)))
-    os.remove(audio_path)
+    audio = yt.streams.filter(only_audio=True).first().download()
+    await inter.edit_original_response(embed=headers.req_done(f"Audio is ready: {yt.title}").set_image(file=disnake.File(audio, filename=audio+".mp3")))
+    os.remove(audio)
     headers.log_event('command_usage', 'yt2mp3', inter)
 
 # Run the bot
