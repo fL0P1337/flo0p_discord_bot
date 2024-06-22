@@ -8,11 +8,11 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 
 ### Remove Background from Images
 
-* `!rembg` - Remove background from any photo using AI-powered models
+* `!removebg` - Remove the background from any photo using AI-powered models.
 
 ### Generate Images from Text
 
-* `/sdxl [your_prompt]` - Stable Diffusion XL can draw anything from your text prompt
+* `/stabblediffusion [your_prompt]` - Generate images from text using the Stable Diffusion 3 model by Stability.ai.
 * `!vision [your_prompt]` - Classify an image using text prompt, it can describe, read, and more
 
 **Text Generation Models**
@@ -20,21 +20,20 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 
 ### Get Creative with AI-powered Text Generation
 
-* `/llama [your_prompt]` - Llama is an open-source LLM that allows you to get really good results
-* `/lzlv [your_prompt]` - Lzlv-70b is an open-source model that actually doesn't have a censor
-* `/bing [your_prompt]` - Bing is LLM created by Microsoft, uses gpt-4 model
-* `/cohere [your_prompt]` - CommandR+ is open source LLM, designed to beat openai's gpt-4 
+* `/llama [your_prompt]` - Llama is an open-source LLM that provides high-quality text generation.
+* `/lzlv [your_prompt]` - Lzlv-70b is an open-source model with no censorship.
+* `/bing [your_prompt]` - Bing is an LLM created by Microsoft, using the GPT-4 model.
  
 **Utility Functions**
 -------------------
 
 ### Convert Text to Speech
 
-* `/gtts [language: ru, en, fr, pt, es] [your_message]` - Google text-to-speech will convert your message to speech!
+* `/text2speech [text] [lang: en, ru, fr, pt, es]` - Google text-to-speech will convert your message to speech.
 
 ### Convert YouTube Videos to MP3
 
-* `/ytmp3 [youtube_link]` - Convert YouTube video into mp3!
+* `/yt2mp3 [youtube_link]` - Convert YouTube videos into MP3 files.
 
 ### Check Bot Credits
 
@@ -54,19 +53,20 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 To use this bot, you'll need to provide your credentials in the `credentials.json` file. This file should be in the following format:
 ```json
 {
-"BOT_TOKEN": "YOUR_DISCORD_BOT_TOKEN",
-"DEEPINFRA_TOKEN": "YOUR_DEEPINFRA_API_KEY",
-"BING_COOKIES": "COOKIES_FROM_BING.COM"
-"REKA_COOKIES" : "COOKIES_FROM_REKA.AI"
+"DISCORD_TOKEN": "Your Discord bot token, obtained from the Discord Developer Portal.",
+"DEEPINFRA_TOKEN": "Your DeepInfra API key for AI-text generation functions.",
+"BING_COOKIES": "Your cookies required for Bing functionality. (More information on obtaining cookies can be found in the wiki).",
+"REKA_COOKIES": "Your cookies required for Reka functionality."
 }
 ```
 Replace the placeholders with your actual credentials.
 
 **What are these credentials?**
 
-* `BOT_TOKEN`: Your Discord bot token, obtained from the Discord Developer Portal.
+* `DISCORD_TOKEN`: Your Discord bot token, obtained from the Discord Developer Portal.
 * `DEEPINFRA_TOKEN`: Your [DeepInfra](https://deepinfra.com) api key, for ai-text generation functions.
-* `BING_COOKIES`: Your cookies, required for !vision functionality. (More information on obtaining cookies can be found in the [wiki](https://en.wikipedia.org/wiki/HTTP_cookie)).
+* `BING_COOKIES`: Your cookies, required for /bing functionality. (More information on obtaining cookies can be found in the [wiki](https://en.wikipedia.org/wiki/HTTP_cookie)).
+* `REKA_COOKIES` : Your cookies, required for !vision functionality
 
 **INVITE-ME**
 ---------------
