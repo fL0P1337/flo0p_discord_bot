@@ -30,11 +30,7 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 ### Convert YouTube Videos to MP3
 
 * `/yt2mp3 [youtube_link]` - Convert YouTube videos into MP3 files.
-
-### Check Bot Credits
-
-* `/credits` - Will show you credits like used libs and author of this bot
-
+  
 **Fun Functions**
 -----------------
 
