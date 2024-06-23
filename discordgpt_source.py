@@ -2,9 +2,8 @@
 import os
 import datetime
 import aiohttp
-import io
+import base64
 from io import BytesIO
-import asyncio
 
 # Import Discord libraries
 import disnake
@@ -13,7 +12,7 @@ from disnake.ext import commands
 # Import G4F libraries
 from g4f.client import AsyncClient
 import g4f
-from g4f.Provider import Bing, Reka
+from g4f.Provider import Bing, Reka, ReplicateImage
 from g4f.cookies import set_cookies
 
 # Import other libraries
@@ -30,9 +29,6 @@ import headers
 # Import Openai module
 from openai import AsyncOpenAI
 
-# Import replicate module
-import replicate
-
 # Bot activity and instance creation
 activity = disnake.Activity(name="!help / Currently working", type=disnake.ActivityType.playing)
 bot = commands.Bot(
@@ -47,13 +43,12 @@ g4f.debug.logging = True
 nest_asyncio.apply()
 
 # Create G4F and OpenAI client instances
-client = AsyncClient(image_provider=Reka)
+g4f_client = AsyncClient(image_provider=ReplicateImage)
 deepinfra_client = AsyncOpenAI(api_key=headers.get_credential("DEEPINFRA_TOKEN"), base_url="https://api.deepinfra.com/v1/openai")
 
 # Set cookies for Bing, Reka, and Huggingface
 set_cookies(".bing.com", {"_U": headers.get_credential('BING_COOKIES')})
 set_cookies("chat.reka.ai", {"appSession": headers.get_credential('REKA_COOKIES')})
-set_cookies("huggingface.co", {"hf-chat": headers.get_credential('HUGGINGFACE_COOKIES')})
 
 # Event handler for bot readiness
 @bot.event
@@ -144,7 +139,7 @@ async def lzlv(inter, *, your_prompt: str):
 async def bing(inter, *, your_prompt: str):
     await inter.response.send_message(embed=headers.req_claim())
     try:
-        response = await client.chat.completions.create(
+        response = await g4f_client.chat.completions.create(
             model="Copilot",
             messages=[{"role": "user", "content": your_prompt}],
             provider=Bing,
@@ -159,24 +154,25 @@ async def bing(inter, *, your_prompt: str):
         headers.log_event('bot_response', inter, error_message)
 
 @bot.slash_command(description="SD-XL can draw you a picture from the text prompt")
-async def stabblediffusion(inter, *, your_prompt: str):
-    await inter.response.send_message(embed=headers.req_claim())
+async def stabblediffusion(inter, your_prompt: str):
     try:
-        replicate_client = {
-            "prompt": your_prompt,
-            "aspect_ratio": "1:1",
-            "output_quality": 100,
-            "output_format": "png",
-        }
-
-        # Use asyncio.to_thread to run the blocking code in a separate thread
-        output = await asyncio.to_thread(replicate.run, "stability-ai/stable-diffusion-3", input=replicate_client)
-
-        await inter.edit_original_response(embed=headers.req_done(" ").set_image(url=output[0]))
-        headers.log_event('command_usage', 'stabblediffusion', inter)
+        # Send initial response with "claim" embed
+        await inter.response.send_message(embed=headers.req_claim())
+        # Generate image using Stability AI model
+        resp_image = await g4f_client.images.generate(model="stability-ai/sdxl", prompt=your_prompt)
+        image_url = resp_image.data[0].url
+        # Convert image URL to bytes stream
+        image_bytes = BytesIO(base64.b64decode(await headers.async_encode_base64(image_url)))
+        # Edit original response with "done" embed and image attachment
+        await inter.edit_original_response(
+            embed=headers.req_done(" ").set_image(file=disnake.File(image_bytes, "result.png"))
+        )
+        # Log successful request
+        headers.log_event('command_usage', 'sdxl', inter)
     except Exception as genimage_error:
+        # Edit original response with "failed" embed
         await inter.edit_original_response(embed=headers.req_failed(error=genimage_error))
-        headers.log_event('command_usage', 'stabblediffusion', genimage_error)
+        headers.log_event('command_usage', 'sdxl', genimage_error)
 
 @bot.slash_command(description="Classify an image using text prompt, it can describe, read, and more")
 async def vision(inter, file: disnake.Attachment, text: str):
@@ -184,7 +180,7 @@ async def vision(inter, file: disnake.Attachment, text: str):
     try:
         image_data = await file.read()
         image_stream = BytesIO(image_data)
-        response = await client.chat.completions.create(model="Reka", messages=[{"role": "user", "content": text}], image=image_stream, provider=Reka)
+        response = await g4f_client.chat.completions.create(model="Reka", messages=[{"role": "user", "content": text}], image=image_stream, provider=Reka)
         await inter.edit_original_response(embed=headers.req_done(response.choices[0].message.content).set_image(url=file))
         headers.log_event('command_usage', 'vision', inter)
         headers.log_event('bot_response', inter, response)
