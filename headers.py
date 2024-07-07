@@ -127,8 +127,6 @@ def req_done(description: str) -> disnake.Embed:
         timestamp=datetime.now()
     )
     return embed
-
-
     
 def cleaner():
     """Clean cached user files"""

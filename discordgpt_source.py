@@ -59,10 +59,10 @@ async def on_ready():
     print(f"\n[INFO] {ready_message}")
 
 # Command handlers
-@bot.slash_command(description="Receive help information")
-async def help(ctx):
-    await ctx.reply(embed=headers.help_msg())
-    headers.log_event('command_usage', 'help', ctx)
+@bot.command(description="Receive help information")
+async def help(inter):
+    await inter.response.send_message(embed=headers.help_msg())
+    headers.log_event('command_usage', 'help', inter)
 
 @bot.slash_command(description="Receive random cat image")
 async def randomcat(inter):
