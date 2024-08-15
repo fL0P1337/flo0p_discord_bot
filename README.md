@@ -20,10 +20,8 @@ Your AI-powered Discord bot for image manipulation, text generation, and more!
 
 ### Get Creative with AI-powered Text Generation
 
-* `/llama [your_prompt]` - Llama is an open-source LLM that provides high-quality text generation.
-* `/lzlv [your_prompt]` - Lzlv-70b is an open-source model with no censorship.
-* `/bing [your_prompt]` - Bing is an LLM created by Microsoft, using the GPT-4 model.
- 
+* `/chatgpt [your_prompt]` - This command utilizes the gpt-4o-mini model that provides high-quality text generation.
+
 **Utility Functions**
 -------------------
 
@@ -47,7 +45,6 @@ To use this bot, you'll need to provide your credentials in the `credentials.jso
 {
 "DISCORD_TOKEN": "Your Discord bot token, obtained from the Discord Developer Portal.",
 "DEEPINFRA_TOKEN": "Your DeepInfra API key for AI-text generation functions.",
-"BING_COOKIES": "Your cookies required for Bing functionality. (More information on obtaining cookies can be found in the wiki).",
 "REKA_COOKIES": "Your cookies required for Reka functionality."
 }
 ```
@@ -57,7 +54,6 @@ Replace the placeholders with your actual credentials.
 
 * `DISCORD_TOKEN`: Your Discord bot token, obtained from the Discord Developer Portal.
 * `DEEPINFRA_TOKEN`: Your [DeepInfra](https://deepinfra.com) api key, for ai-text generation functions.
-* `BING_COOKIES`: Your cookies, required for /bing functionality. (More information on obtaining cookies can be found in the [wiki](https://en.wikipedia.org/wiki/HTTP_cookie)).
 * `REKA_COOKIES` : Your cookies, required for !vision functionality
 
 **INVITE-ME**

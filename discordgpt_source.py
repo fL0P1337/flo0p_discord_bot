@@ -12,7 +12,7 @@ from disnake.ext import commands
 # Import G4F libraries
 from g4f.client import AsyncClient
 import g4f
-from g4f.Provider import Bing, Reka, ReplicateImage
+from g4f.Provider import DDG, Reka, DeepInfraImage
 from g4f.cookies import set_cookies
 
 # Import other libraries
@@ -43,8 +43,7 @@ g4f.debug.logging = True
 nest_asyncio.apply()
 
 # Create G4F and OpenAI client instances
-g4f_client = AsyncClient(image_provider=ReplicateImage)
-deepinfra_client = AsyncOpenAI(api_key=headers.get_credential("DEEPINFRA_TOKEN"), base_url="https://api.deepinfra.com/v1/openai")
+g4f_client = AsyncClient(image_provider=DeepInfraImage)
 
 # Set cookies for Bing, Reka, and Huggingface
 set_cookies(".bing.com", {"_U": headers.get_credential('BING_COOKIES')})
@@ -102,51 +101,18 @@ async def randomcatgif(inter):
     except Exception as error:
         await inter.edit_original_response(embed=headers.req_failed(str(error)))
 
-@bot.slash_command(description="Llama is open source LLM that allows you get really good results")
-async def llama(inter, *, your_prompt: str):
+@bot.slash_command(description="This command utilizes the gpt-4o-mini model that provides high-quality text generation.")
+async def chatgpt(inter, *, your_prompt: str):
     await inter.response.send_message(embed=headers.req_claim())
     try:
-        response = await deepinfra_client.chat.completions.create(
-            model="meta-llama/Meta-Llama-3-70B-Instruct",
+        response = await g4f_client.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[{"role": "user", "content": your_prompt}],
+            provider=DDG
         )
         result = response.choices[0].message.content
         await inter.edit_original_response(embed=headers.req_done(result))
         headers.log_event('command_usage', 'llama', inter)
-        headers.log_event('bot_response', inter, result)
-    except Exception as e:
-        error_message = str(e)
-        await inter.edit_original_response(embed=headers.req_failed(error=error_message))
-        headers.log_event('bot_response', inter, error_message)
-
-@bot.slash_command(description="Lzlv-70b is open source model that actually doesn't have a censor")
-async def lzlv(inter, *, your_prompt: str):
-    await inter.response.send_message(embed=headers.req_claim())
-    try:
-        response = await deepinfra_client.chat.completions.create(
-            model="lizpreciatior/lzlv_70b_fp16_hf",
-            messages=[{"role": "user", "content": your_prompt}],
-        )
-        response_content = response.choices[0].message.content
-        await inter.edit_original_response(embed=headers.req_done(response_content))
-        headers.log_event('command_usage', 'lzlv', inter)
-        headers.log_event('bot_response', inter, response_content)
-    except Exception as e:
-        error_message = f"Error: {e}"
-        await inter.edit_original_response(embed=headers.req_failed(error=error_message))
-
-@bot.slash_command(description="Bing is LLM created by Microsoft, uses gpt-4 model")
-async def bing(inter, *, your_prompt: str):
-    await inter.response.send_message(embed=headers.req_claim())
-    try:
-        response = await g4f_client.chat.completions.create(
-            model="Copilot",
-            messages=[{"role": "user", "content": your_prompt}],
-            provider=Bing,
-        )
-        result = response.choices[0].message.content
-        await inter.edit_original_response(embed=headers.req_done(result))
-        headers.log_event('command_usage', 'bing', inter)
         headers.log_event('bot_response', inter, result)
     except Exception as e:
         error_message = str(e)

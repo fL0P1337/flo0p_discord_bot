@@ -79,9 +79,7 @@ def help_msg():
     
     embed.add_field(
         name="Text-Generation Models",
-        value="/llama [your_prompt] - Llama is open source LLM that allows you get really good results\n"
-              "/lzlv [your_prompt] - Lzlv-70b is open source model that actually doesn't have a censor\n"
-              "/bing [your_prompt] - Bing is LLM created by Microsoft, uses gpt-4 model\n",
+        value="/chatgpt [your_prompt] - This command utilizes the gpt-4o-mini model that provides high-quality text generation.\n",
         inline=False
     )
     embed.add_field(
